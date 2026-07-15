@@ -1,4 +1,4 @@
-# 🔍 SEO Suite — Vercel
+# 🔍 SEO Audit Suite
 
 An enterprise-grade SEO auditing tool, inspired by SEMrush, Ahrefs, Ubersuggest, and SEO Meta in 1 Click. Built as a Next.js frontend with Python serverless functions on Vercel.
 
@@ -12,7 +12,7 @@ This repository combines two existing SEO projects into one Vercel-deployable ap
 > Neither source repository was modified — everything here was **copied** in.
 > SEO-Suite's heavy, stateful features (Playwright indexing checker, multi-user
 > auth, SQLite history, background jobs, SSE streaming, GSC/Bing) are **not** on
-> Vercel by design — see [`FUTURE.md`](FUTURE.md) for the phase-2 plan to host
+> Vercel by design — see [`FUTURE.md`](docs/FUTURE.md) for the phase-2 plan to host
 > them alongside this frontend.
 
 ## Deploy
@@ -129,8 +129,8 @@ large result sets no longer 413.
 ### Local
 
 ```bash
-git clone https://github.com/venkataramana-d/seo-technical-audit-dashboard-main.git
-cd seo-technical-audit-dashboard-main
+git clone <your-repo-url> seo-audit-suite
+cd seo-audit-suite
 npm install
 python -m venv .venv && source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -r requirements.txt

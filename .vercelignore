@@ -1,0 +1,32 @@
+# Keep the Vercel deployment bundle small and builds fast: none of this is
+# needed at runtime by the Next.js app or the Python serverless functions.
+
+# Tests (run in CI, not at deploy)
+tests/
+conftest.py
+vitest.config.ts
+**/*.test.ts
+**/*.test.tsx
+
+# Docs & project meta
+docs/
+*.md
+!README.md
+
+# CI / tooling config not used by the Vercel build
+.github/
+.claude/
+eslint.config.mjs
+
+# Python dev-only deps and caches
+requirements-dev.txt
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local env / editor
+.env*
+.vscode/
+.idea/
