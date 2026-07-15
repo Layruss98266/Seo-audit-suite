@@ -23,7 +23,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const SITE_URL = "https://seo-audit-dashboard-topaz.vercel.app";
-const SITE_NAME = "SEO Technical Audit Dashboard";
+const SITE_NAME = "SEO Audit Suite";
 const SITE_DESCRIPTION = "Enterprise-grade SEO technical audit tool";
 
 export const metadata: Metadata = {

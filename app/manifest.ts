@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "SEO Technical Audit Dashboard",
+    name: "SEO Audit Suite",
     short_name: "SEO Audit",
     description: "Enterprise-grade SEO technical audit tool",
     start_url: "/",

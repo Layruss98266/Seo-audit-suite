@@ -1,4 +1,4 @@
-// Client-side URL-list parsing for the Technical Audit "CSV / Paste URLs" mode.
+// Client-side URL-list parsing for the SEO Audit "CSV / Paste URLs" mode.
 // Parsing happens entirely in the browser, no upload endpoint, no server
 // storage, no CSV-formula-injection surface (per PROJECT_LOG.md).
 //

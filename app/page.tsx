@@ -54,7 +54,7 @@ export default function DashboardPage() {
         />
         <div className="mt-4">
           <Link
-            href="/technical-audit"
+            href="/seo-audit"
             className="inline-block rounded-lg btn-gradient px-4 py-2 text-sm font-semibold text-white"
           >
             Run New Audit

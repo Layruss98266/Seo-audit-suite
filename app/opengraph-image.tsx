@@ -57,7 +57,7 @@ export default function OpengraphImage() {
         >
           SEO Audit
         </div>
-        <div style={{ fontSize: 30, color: "#94A3B8" }}>Technical Audit Dashboard</div>
+        <div style={{ fontSize: 30, color: "#94A3B8" }}>SEO Audit Suite</div>
       </div>
     ),
     size,

@@ -8,7 +8,7 @@ const STORAGE_KEY = "seo-audit-selected-checks";
 /**
  * Shared, localStorage-persisted set of which of the 35 checks are enabled.
  * Default: all checks selected. Used by CheckSelector (to edit) and the
- * detail page's Technical Audit tab (to filter what's displayed).
+ * detail page's SEO Audit tab (to filter what's displayed).
  *
  * Note: deselecting a check only hides it from the report; the backend
  * always computes all 35 checks in one audit_url() call (they're bundled

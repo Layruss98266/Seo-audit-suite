@@ -363,7 +363,7 @@ export default function DetailPage() {
                   {shown < r.technical_audit_checklist.summary.total ? (
                     <p className="mt-2 text-xs text-[var(--seo-muted)]">
                       {r.technical_audit_checklist.summary.total - shown} check(s) hidden. Adjust on the
-                      Technical Audit page → Customize checks.
+                      SEO Audit page → Customize checks.
                     </p>
                   ) : null}
                 </Card>
@@ -371,7 +371,7 @@ export default function DetailPage() {
                 {shown === 0 ? (
                   <EmptyState
                     title="All checks hidden"
-                    hint="Go to the Technical Audit page → Customize checks and select at least one check."
+                    hint="Go to the SEO Audit page → Customize checks and select at least one check."
                   />
                 ) : null}
 

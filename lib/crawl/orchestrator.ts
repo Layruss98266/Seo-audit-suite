@@ -1,4 +1,4 @@
-// Client-side crawl orchestrator for the sitewide Technical Audit.
+// Client-side crawl orchestrator for the sitewide SEO Audit.
 //
 // Our backend is stateless Vercel serverless (60s/invocation, no SSE, no server
 // state, see PROJECT_LOG.md), so the browser drives the crawl: given a list of

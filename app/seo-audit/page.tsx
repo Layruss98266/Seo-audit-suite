@@ -327,7 +327,7 @@ export default function TechnicalAuditPage() {
     <div className="mx-auto max-w-4xl">
       <PageHeader
         icon={<ScanIcon size={18} />}
-        title="Technical Audit"
+        title="SEO Audit"
         subtitle="Run a technical SEO audit on a single URL, an entire sitemap, a crawl, or a list of URLs."
       />
 
@@ -605,7 +605,7 @@ export default function TechnicalAuditPage() {
               type="submit"
               className="rounded-lg btn-gradient px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
             >
-              {mode === "single" ? "Run Audit" : "Run Technical Audit"}
+              {mode === "single" ? "Run Audit" : "Run SEO Audit"}
             </button>
           ) : (
             <button

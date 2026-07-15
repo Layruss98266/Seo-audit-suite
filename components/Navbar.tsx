@@ -27,7 +27,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/", icon: GaugeIcon, label: "Dashboard" },
-  { href: "/technical-audit", icon: ScanIcon, label: "Technical Audit" },
+  { href: "/seo-audit", icon: ScanIcon, label: "SEO Audit" },
   // Results is the single per-URL section: the list lives at /results and
   // the drill-down (with Links / Headings / Performance tabs) at /detail.
   { href: "/results", icon: ListChecksIcon, label: "Results" },
@@ -105,7 +105,7 @@ export function Navbar() {
           <GlobalSearch />
           <button
             type="button"
-            onClick={() => router.push("/technical-audit")}
+            onClick={() => router.push("/seo-audit")}
             className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg btn-gradient px-3 py-1.5 text-[13px] font-semibold text-white"
           >
             <PlusIcon size={15} />
@@ -163,7 +163,7 @@ export function Navbar() {
             type="button"
             onClick={() => {
               setMobileOpen(false);
-              router.push("/technical-audit");
+              router.push("/seo-audit");
             }}
             className="flex items-center justify-center gap-1.5 rounded-lg btn-gradient px-3 py-2 text-center text-sm font-semibold text-white"
           >
