@@ -176,7 +176,16 @@ function ResultRow({ r, onOpen }: { r: AuditResult; onOpen: (r: AuditResult) => 
   return (
     <tr
       onClick={() => onOpen(r)}
-      className="cursor-pointer border-b border-[var(--table-row-border)] last:border-0 hover:bg-[var(--table-row-hover)]"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen(r);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Open audit detail for ${r.url}`}
+      className="cursor-pointer border-b border-[var(--table-row-border)] last:border-0 hover:bg-[var(--table-row-hover)] focus:outline-none focus-visible:bg-[var(--table-row-hover)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--seo-accent)]"
     >
       <td className="px-4 py-3 align-top font-medium text-[var(--seo-subheading)]">
         <span className="break-all">{r.url}</span>

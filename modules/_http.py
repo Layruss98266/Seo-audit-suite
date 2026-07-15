@@ -63,7 +63,7 @@ def require_str(handler, payload, *keys, field_name=None):
         if value:
             break
     if not value:
-        send_json(handler, 400, {"error": f"{field_name or keys[0]} is required"})
+        send_json(handler, 400, {"ok": False, "error": f"{field_name or keys[0]} is required"})
         return None
     return value
 

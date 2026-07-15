@@ -33,9 +33,6 @@ jobs:
   deploy:
     needs: ci
     runs-on: ubuntu-latest
-    # Skip entirely if the deploy token isn't configured yet, so the workflow
-    # doesn't hard-fail on first push before secrets are added.
-    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -46,35 +43,41 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      # Sets enabled=true only when the token secret is present. Every deploy
+      # step below gates on this output, so a repo without secrets configured
+      # gets a green (skipped) run instead of a hard failure on `vercel pull`.
       - name: Guard — require VERCEL_TOKEN
+        id: guard
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           if [ -z "$VERCEL_TOKEN" ]; then
             echo "::warning::VERCEL_TOKEN is not set — skipping deploy. Add repo secrets VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID to enable deployments."
-            exit 0
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Pull Vercel environment (production)
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ steps.guard.outputs.enabled == 'true' && github.event_name == 'push' }}
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Pull Vercel environment (preview)
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ steps.guard.outputs.enabled == 'true' && github.event_name == 'pull_request' }}
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build (production)
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ steps.guard.outputs.enabled == 'true' && github.event_name == 'push' }}
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build (preview)
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ steps.guard.outputs.enabled == 'true' && github.event_name == 'pull_request' }}
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy (production)
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ steps.guard.outputs.enabled == 'true' && github.event_name == 'push' }}
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy (preview)
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ steps.guard.outputs.enabled == 'true' && github.event_name == 'pull_request' }}
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}

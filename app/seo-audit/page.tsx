@@ -41,7 +41,7 @@ type ModeIcon = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
 const MODES: { id: InputMode; label: string; icon: ModeIcon; hint: string; help: string }[] = [
   {
     id: "single", label: "Single URL", icon: LinkIcon, hint: "Audit one page.",
-    help: "Runs the full 35-check technical audit on exactly one URL you enter. Best when you just want to check one page: a new blog post, a landing page you're about to publish, or a page a client asked about.",
+    help: "Runs the full 35-check SEO audit on exactly one URL you enter. Best when you just want to check one page: a new blog post, a landing page you're about to publish, or a page a client asked about.",
   },
   {
     id: "sitemap", label: "Sitemap", icon: MapIcon, hint: "Sitewide audit from sitemap.xml.",
@@ -57,7 +57,7 @@ const MODES: { id: InputMode; label: string; icon: ModeIcon; hint: string; help:
   },
 ];
 
-export default function TechnicalAuditPage() {
+export default function SEOAuditPage() {
   const router = useRouter();
   const { addResult, addResults } = useAudit();
 

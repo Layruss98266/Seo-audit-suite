@@ -45,7 +45,7 @@ function ResultBlock({ result }: { result: ToolResult }) {
       <div className="mb-2 flex items-center gap-2">
         <StatusPill status={result.ok ? "pass" : "fail"} />
         {result.error ? (
-          <span className="text-sm text-[var(--seo-danger)]">{String(result.error)}</span>
+          <span className="text-sm text-[var(--seo-error)]">{String(result.error)}</span>
         ) : null}
       </div>
       <pre className="max-h-96 overflow-auto rounded-lg border border-[var(--seo-border)] bg-[var(--seo-code-bg,var(--seo-card-hover))] p-3 font-[var(--font-jetbrains-mono),monospace] text-xs text-[var(--seo-text)]">

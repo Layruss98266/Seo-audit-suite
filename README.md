@@ -160,23 +160,26 @@ calls, which is expected for local UI-only work.
 
 ```
 ├── app/                     # Next.js App Router pages (frontend)
-├── api/                     # Vercel Python serverless functions
-│   ├── audit.py             # Runs a full audit for one URL
-│   ├── pagespeed.py         # Live PageSpeed Insights fetch
-│   ├── export.py            # CSV / Excel / PDF export
-│   ├── ai-summary.py        # Groq AI plain-English audit summary
-│   └── config-status.py     # Reports whether PSI_API_KEY / GROQ_API_KEY are set
-├── modules/                 # Audit engine (reused by api/audit.py etc.)
-│   ├── auditor.py           # Core URL audit engine
-│   ├── advanced_checks.py   # SERP preview, schema, mobile, hreflang, social
-│   ├── technical_checks.py  # Domain age, SSL, DNS/SPF/DMARC/MX, robots.txt, sitemap, readability, etc.
-│   ├── ai_assist.py         # Groq AI summary (explain_audit)
-│   ├── link_auditor.py      # Internal & external link analysis
-│   ├── course_auditor.py    # Course-page checks
-│   ├── blog_auditor.py      # Blog-page checks
-│   ├── scoring.py           # SEO Health Score + thematic grouping
-│   └── report_generator.py  # CSV / Excel / PDF export
+│   ├── seo-audit/           #   single + bulk audit runner
+│   ├── results/ detail/     #   results overview & per-URL drill-down
+│   ├── tools/               #   ported SEO-Suite tools (generators, validators)
+│   └── settings/
+├── api/                     # Vercel Python serverless functions (1 file = 1 function)
+│   ├── audit-pipeline.py    #   runs the audit engine for one/many URLs
+│   ├── ai.py                #   Groq summaries + fix suggestions + config status
+│   ├── export.py            #   CSV / Excel / PDF export
+│   └── tools.py             #   ported SEO-Suite tools (action-dispatch)
+├── modules/                 # Python audit engine (shared by the api/ functions)
+│   ├── auditor.py           #   core URL audit engine
+│   ├── advanced_checks.py   #   SERP preview, schema, mobile, hreflang, social
+│   ├── technical_checks.py  #   domain age, SSL, DNS/SPF/DMARC/MX, robots, sitemap
+│   ├── ai_assist.py         #   Groq AI summary (explain_audit)
+│   ├── link_auditor.py      #   internal & external link analysis
+│   ├── scoring.py           #   SEO Health Score + thematic grouping
+│   ├── report_generator.py  #   CSV / Excel / PDF export
+│   └── seo_suite/           #   ← stateless tools ported from the SEO-Suite project
 ├── lib/                     # Client-side state, aggregation, formatting
+├── docs/                    # ARCHITECTURE.md, FUTURE.md
 └── requirements.txt         # Python dependencies for /api
 ```
 

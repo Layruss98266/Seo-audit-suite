@@ -21,6 +21,7 @@ All handlers are stateless (no DB, no auth, no background jobs) so they run
 cleanly on Vercel's Python runtime.
 """
 
+import json
 import logging
 import os
 import sys
@@ -51,28 +52,37 @@ def _handle_schema_fields(handler, payload):
     send_json(handler, 200 if result.get("ok") else 400, result)
 
 
+def _run_generator(handler, fn, data, label):
+    """Run a generator on `data`, mapping any malformed-input crash to a clean
+    400 instead of a 500. The generators only catch (ValueError, TypeError), so
+    e.g. a list of scalars where dicts are expected raises AttributeError — a
+    client error, not a server fault."""
+    try:
+        result = fn(data)
+        send_json(handler, 200 if result.get("ok") else 400, result)
+    except Exception:  # noqa: BLE001
+        logger.exception("%s failed", label)
+        send_json(handler, 400, {"ok": False, "error": f"Invalid input for {label}."})
+
+
 def _handle_generate_robots(handler, payload):
     data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
-    result = generators.generate_robots_txt(data)
-    send_json(handler, 200 if result.get("ok") else 400, result)
+    _run_generator(handler, generators.generate_robots_txt, data, "generate-robots")
 
 
 def _handle_generate_sitemap(handler, payload):
     data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
-    result = generators.generate_sitemap(data)
-    send_json(handler, 200 if result.get("ok") else 400, result)
+    _run_generator(handler, generators.generate_sitemap, data, "generate-sitemap")
 
 
 def _handle_generate_hreflang(handler, payload):
     data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
-    result = generators.generate_hreflang(data)
-    send_json(handler, 200 if result.get("ok") else 400, result)
+    _run_generator(handler, generators.generate_hreflang, data, "generate-hreflang")
 
 
 def _handle_generate_meta(handler, payload):
     data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
-    result = generators.generate_meta_tags(data)
-    send_json(handler, 200 if result.get("ok") else 400, result)
+    _run_generator(handler, generators.generate_meta_tags, data, "generate-meta")
 
 
 def _handle_validate_schema(handler, payload):
@@ -115,14 +125,22 @@ def _handle_keyword_research(handler, payload):
     login = (payload.get("dataforseoLogin") or os.environ.get("DATAFORSEO_LOGIN") or "").strip()
     password = (payload.get("dataforseoPassword") or os.environ.get("DATAFORSEO_PASSWORD") or "").strip()
 
+    # Coerce numeric params up-front so bad input is a clean 400, not a 500.
+    try:
+        location_code = int(payload.get("location") or 2840)
+        limit = int(payload.get("limit") or 150)
+    except (TypeError, ValueError):
+        send_json(handler, 400, {"ok": False, "error": "location and limit must be numbers."})
+        return
+
     try:
         result = keyword_research.research_keywords(
             keywords,
             login,
             password,
-            location_code=int(payload.get("location") or 2840),
+            location_code=location_code,
             language_code=(payload.get("language") or "en"),
-            limit=int(payload.get("limit") or 150),
+            limit=limit,
             mode=(payload.get("mode") or "auto"),
         )
         send_json(handler, 200 if result.get("ok") else 400, result)
@@ -159,6 +177,10 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             payload = read_json_body(self)
+        except (json.JSONDecodeError, ValueError):
+            # Malformed request body is a client error, not a server fault.
+            send_json(self, 400, {"ok": False, "error": "Malformed JSON request body."})
+            return
         except Exception:  # noqa: BLE001
             logger.exception("tools.py request body could not be parsed")
             send_json(self, 500, {"ok": False, "error": "Internal error while processing the request."})

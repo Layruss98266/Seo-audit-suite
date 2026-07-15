@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   // Baked into the client bundle at build time. Vercel sets VERCEL=1 for
   // every build it runs (production AND preview); a local `next build`/
   // `next dev` won't have it set. Backs the bulk-audit URL-limit inputs in
-  // app/technical-audit/page.tsx — see modules/_http.py::bulk_url_cap for
+  // app/seo-audit/page.tsx — see modules/_http.py::bulk_url_cap for
   // the matching backend-side cap and why 200/5000.
   env: {
     NEXT_PUBLIC_BULK_URL_LIMIT: process.env.VERCEL ? "200" : "5000",

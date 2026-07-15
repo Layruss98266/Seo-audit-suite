@@ -9,7 +9,7 @@ dashboard (the base) plus stateless tools ported from the SEO-Suite project.
 ```
 seo-audit-suite/
 ├─ app/                 # Next.js App Router pages (UI)
-│  ├─ technical-audit/  #   single + bulk technical audit
+│  ├─ seo-audit/  #   single + bulk technical audit
 │  ├─ results/ detail/  #   audit results & per-URL drill-down
 │  ├─ tools/            #   ported SEO-Suite tools (schema/validator/page-type)
 │  └─ settings/
