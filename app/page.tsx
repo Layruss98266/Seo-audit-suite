@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAudit } from "@/lib/state/AuditContext";
-import { Card, MetricCard, PageHeader, EmptyState, IssueRow } from "@/components/ui";
+import { Card, MetricCard, PageHeader, IssueRow } from "@/components/ui";
 import { GaugeIcon } from "@/components/icons";
+import { GetStarted } from "@/components/GetStarted";
 import { formatDate, scoreColor } from "@/lib/format";
 import {
   allIssuesOf,
@@ -45,23 +45,7 @@ export default function DashboardPage() {
   const router = useRouter();
 
   if (results.length === 0) {
-    return (
-      <div>
-        <PageHeader icon={<GaugeIcon size={18} />} title="Dashboard Overview" />
-        <EmptyState
-          title="No audits yet"
-          hint="Run your first audit to see your SEO health dashboard."
-        />
-        <div className="mt-4">
-          <Link
-            href="/seo-audit"
-            className="inline-block rounded-lg btn-gradient px-4 py-2 text-sm font-semibold text-white"
-          >
-            Run New Audit
-          </Link>
-        </div>
-      </div>
-    );
+    return <GetStarted />;
   }
 
   const score = avgScore(results);
