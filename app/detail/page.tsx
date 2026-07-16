@@ -142,6 +142,40 @@ function KeyValueGrid({ data }: { data: Record<string, unknown> }) {
   );
 }
 
+type VerticalAudit = { found: Record<string, boolean>; score: number } | null;
+
+/** course_audit/blog_audit/product_audit each use their own found-map/score
+ * key names (sections_found/sections_score, elements_found/elements_score,
+ * checks_found/checks_score) — this normalizes whichever one is present for
+ * the current page's audit_type into one shape the card below can render
+ * uniformly, without renaming the underlying Python fields. */
+function verticalAuditFor(r: {
+  audit_type: string;
+  course_audit?: Record<string, any> | null;
+  blog_audit?: Record<string, any> | null;
+  product_audit?: Record<string, any> | null;
+}): { label: string; audit: VerticalAudit } {
+  if (r.audit_type === "course" && r.course_audit && Object.keys(r.course_audit).length) {
+    return {
+      label: "Course",
+      audit: { found: r.course_audit.sections_found || {}, score: r.course_audit.sections_score ?? 0 },
+    };
+  }
+  if (r.audit_type === "blog" && r.blog_audit && Object.keys(r.blog_audit).length) {
+    return {
+      label: "Blog",
+      audit: { found: r.blog_audit.elements_found || {}, score: r.blog_audit.elements_score ?? 0 },
+    };
+  }
+  if (r.audit_type === "product" && r.product_audit && Object.keys(r.product_audit).length) {
+    return {
+      label: "Product",
+      audit: { found: r.product_audit.checks_found || {}, score: r.product_audit.checks_score ?? 0 },
+    };
+  }
+  return { label: "", audit: null };
+}
+
 export default function DetailPage() {
   const { results, selectedUrlIndex, setSelectedUrlIndex, groqApiKey } = useAudit();
   const [tab, setTab] = useState<Tab>("Overview");
@@ -662,6 +696,37 @@ export default function DetailPage() {
 
       {tab === "Content" ? (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {(() => {
+            const { label, audit } = verticalAuditFor(r);
+            if (!audit) return null;
+            return (
+              <Card className="lg:col-span-2">
+                <div className="mb-1 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-[var(--seo-subheading)]">
+                    Vertical Content Checks ({label})
+                  </h3>
+                  <span className="text-sm font-semibold text-[var(--seo-heading)]">
+                    {audit.score}% complete
+                  </span>
+                </div>
+                <HelpSection>
+                  Structural checks specific to {label.toLowerCase()} pages, on top of the
+                  standard 35-check audit. These findings also appear in the Issues tab.
+                </HelpSection>
+                <div className="mt-3 grid grid-cols-1 gap-x-8 gap-y-1.5 sm:grid-cols-2">
+                  {Object.entries(audit.found).map(([name, found]) => (
+                    <div
+                      key={name}
+                      className="flex items-center justify-between border-b border-[var(--seo-border)] py-1.5 text-sm"
+                    >
+                      <span className="text-[var(--seo-text-light)]">{name}</span>
+                      <BoolBadge ok={found} />
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            );
+          })()}
           <Card>
             <h3 className="mb-3 text-sm font-semibold text-[var(--seo-subheading)]">Content</h3>
             <KeyValueGrid
