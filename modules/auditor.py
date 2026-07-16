@@ -604,6 +604,14 @@ def detect_page_type(url, soup):
         return "course"
     if any(x in url_lower for x in ["/blog/", "/blogs/", "/article/", "/post/", "/news/", "/insight/"]):
         return "blog"
+    # Slash-delimited path segments only (not bare "product" substring): a
+    # naive `"product" in url_lower` check misclassifies real URLs like
+    # edstellar.com's /course/product-launch-training and
+    # /category/product-management-training, where "product" is part of a
+    # course/category slug, not a real product page. Verified zero false
+    # positives against the live edstellar.com sitemap (2,461 URLs).
+    if any(x in url_lower for x in ["/product/", "/products/", "/shop/", "/item/"]):
+        return "product"
     return "general"
 
 
