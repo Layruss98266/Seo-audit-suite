@@ -583,10 +583,7 @@ export default function ResultsPage() {
       ) : null}
 
       {/* ── destructive: clear all ── */}
-      <div className="mt-6 flex items-center justify-between border-t border-[var(--seo-border)] pt-4">
-        <a href="/results-legacy" className="text-xs text-[var(--seo-muted)] hover:text-[var(--seo-text-light)] hover:underline">
-          View legacy results layout →
-        </a>
+      <div className="mt-6 flex items-center justify-end border-t border-[var(--seo-border)] pt-4">
         <button
           type="button"
           onClick={() => {
