@@ -162,11 +162,17 @@ def test_jsonld_blob_without_type_key_does_not_trigger_schema_found():
 
 def test_deeply_nested_jsonld_does_not_raise_recursion_error():
     # A maliciously (or accidentally) deep/self-referential JSON-LD blob
-    # should not crash the audit with RecursionError.
+    # should not crash the audit with RecursionError. No "@type" anywhere in
+    # the blob (2000 levels, well past Python's default recursion limit and
+    # the ~500-level threshold where the unguarded walkers actually crash),
+    # so _has_type/_has_any_type/_schema_price all have to walk the FULL
+    # depth without an early match to short-circuit on -- the worst case the
+    # depth guard exists to prevent. A shallower blob with "@type" on the
+    # outer dict would let has_type's Product check return immediately
+    # without recursing at all, silently passing even without the guard.
     nested = {"leaf": True}
-    for _ in range(200):
+    for _ in range(2000):
         nested = {"child": nested}
-    nested["@type"] = "Product"
 
     html = f"""
     <html><body>
@@ -180,3 +186,5 @@ def test_deeply_nested_jsonld_does_not_raise_recursion_error():
 
     assert isinstance(result, dict)
     assert "issues" in result
+    assert result["has_product_schema"] is False
+    assert result["price_found"] is False
