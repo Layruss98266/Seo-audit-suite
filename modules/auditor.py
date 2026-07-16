@@ -652,6 +652,7 @@ def audit_url(url, audit_type="auto", check_links=True, validate_links=False,
         "external_links": {},
         "course_audit": {},
         "blog_audit": {},
+        "product_audit": {},
         "http_headers": {},
         "technical_seo": {},
         "seo_score": 0,
@@ -771,6 +772,9 @@ def audit_url(url, audit_type="auto", check_links=True, validate_links=False,
     elif result["audit_type"] == "blog":
         from modules.blog_auditor import audit_blog_page
         result["blog_audit"] = audit_blog_page(soup, url)
+    elif result["audit_type"] == "product":
+        from modules.product_auditor import audit_product_page
+        result["product_audit"] = audit_product_page(soup, url)
 
     all_issues = []
     # "headings" and "images" are intentionally omitted: heading_detail and
@@ -780,7 +784,8 @@ def audit_url(url, audit_type="auto", check_links=True, validate_links=False,
     for key in ["metadata", "canonical", "indexability", "url_structure",
                 "content", "heading_detail", "image_detail",
                 "advanced", "redirect_analysis", "mobile_audit", "site_health",
-                "internal_links", "external_links", "course_audit", "blog_audit"]:
+                "internal_links", "external_links", "course_audit", "blog_audit",
+                "product_audit"]:
         all_issues.extend(result.get(key, {}).get("issues", []))
     result["all_issues"] = _normalize_issues(all_issues)
 
