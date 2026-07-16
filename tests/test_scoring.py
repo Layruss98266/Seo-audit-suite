@@ -143,3 +143,9 @@ def test_top_issues_sorted_by_impact_descending():
     issues = [_issue(impact=3), _issue(impact=9), _issue(impact=6)]
     top = get_top_issues_by_impact(issues, top_n=2)
     assert [i["impact_score"] for i in top] == [9, 6]
+
+
+def test_product_content_is_a_page_specific_theme():
+    from modules.scoring import THEMES
+
+    assert "Product Content" in THEMES["Page-Specific"]

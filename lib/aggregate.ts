@@ -26,7 +26,7 @@ export const THEMES: Record<string, string[]> = {
   "Social & Schema": ["Structured Data", "Social SEO", "International SEO"],
   Images: ["Images", "Image SEO"],
   "Site Health": ["Site Health", "Security"],
-  "Page-Specific": ["Course Content", "Blog Content", "Conversion"],
+  "Page-Specific": ["Course Content", "Blog Content", "Product Content", "Conversion"],
 };
 
 export function getThematicIssues(allIssues: Issue[]): Record<string, Issue[]> {
