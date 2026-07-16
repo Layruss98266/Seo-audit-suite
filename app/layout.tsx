@@ -62,7 +62,11 @@ export default async function RootLayout({
   // this inline script needs it or the CSP's script-src blocks it.
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
-    <html lang="en" className={`h-full antialiased ${inter.variable} ${jetbrainsMono.variable}`}>
+    // suppressHydrationWarning here: themeInitScript below runs before
+    // hydration and adds/removes the "dark" class straight on this element to
+    // avoid a flash of the wrong theme — the client's live className is
+    // expected to differ from the server-rendered one at hydration time.
+    <html lang="en" suppressHydrationWarning className={`h-full antialiased ${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
         {/* Browsers strip the `nonce` attribute from the DOM after applying the
             CSP (a security measure), so the client reads nonce="" while the
