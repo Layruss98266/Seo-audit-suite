@@ -139,3 +139,20 @@ def test_checks_found_and_score_reflect_bare_vs_complete():
     }
     assert all(v is False for v in bare["checks_found"].values())
     assert all(v is True for v in complete["checks_found"].values())
+
+
+def test_jsonld_blob_without_type_key_does_not_trigger_schema_found():
+    # JSON-LD block parses fine but contains no @type key anywhere.
+    # schema_found should be False, not True (old buggy behavior).
+    html = """
+    <html><body>
+    <script type="application/ld+json">
+    {"@context": "https://schema.org", "name": "Some Config", "somethingElse": "value"}
+    </script>
+    </body></html>
+    """
+    soup = BeautifulSoup(html, "lxml")
+    result = audit_product_page(soup, "https://example.com/product/no-type")
+
+    assert result["schema_found"] is False
+    assert result["has_product_schema"] is False

@@ -38,6 +38,17 @@ def _has_type(data, type_name):
     return False
 
 
+def _has_any_type(data):
+    """Check whether a (possibly nested) JSON-LD blob contains ANY @type key."""
+    if isinstance(data, dict):
+        if "@type" in data:
+            return True
+        return any(_has_any_type(v) for v in data.values())
+    if isinstance(data, list):
+        return any(_has_any_type(item) for item in data)
+    return False
+
+
 def _schema_price(data):
     """Pull offers.price out of a JSON-LD blob, if present."""
     if isinstance(data, dict):
@@ -69,7 +80,7 @@ def audit_product_page(soup, url):
     page_text = soup.get_text(" ", strip=True)
 
     jsonld_blobs = list(_iter_jsonld(soup))
-    schema_found = bool(jsonld_blobs)
+    schema_found = any(_has_any_type(b) for b in jsonld_blobs)
     has_product_schema = any(_has_type(b, "Product") for b in jsonld_blobs)
     if not has_product_schema:
         issues.append({
