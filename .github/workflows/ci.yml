@@ -1,18 +1,16 @@
 name: CI
 
 # Build+test gate for the frontend (Next.js) and backend (Python serverless
-# handlers), run on every push/PR. Deployment is handled by deploy.yml, which
-# reuses this workflow as a gate (see its `uses: ./.github/workflows/ci.yml`)
-# and only ships once these jobs pass. If you instead rely on Vercel's own Git
-# integration to auto-deploy, disable deploy.yml to avoid double deploys.
+# handlers), run on every push/PR. Deployment is handled entirely by Vercel's
+# own Git integration (connected directly in the Vercel dashboard) — there is
+# deliberately no GitHub Actions deploy step here, to avoid double-deploying
+# every push. This workflow is CI-only: it doesn't gate Vercel's deploy.
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-  # Allow deploy.yml to reuse this workflow as a gate before shipping.
-  workflow_call:
 
 jobs:
   frontend:

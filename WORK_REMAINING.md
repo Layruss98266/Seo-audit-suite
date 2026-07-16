@@ -87,15 +87,24 @@ Everything else in SEO-Suite is either already covered by the base or blocked
 (Playwright / auth / DB / GSC-Bing OAuth) — those are the FUTURE.md phase-2 items.
 
 ### C. Informational review notes (no code change, decide later)
-- **Double-deploy risk**: if Vercel's Git auto-deploy is ALSO enabled in the
-  dashboard, every push to `main` deploys twice (Git integration + `deploy.yml`).
-  Pick one. `ci.yml`'s header comment now flags this.
-- **`vercel.json` maxDuration**: lowered `audit-pipeline` to 60s for Hobby. If the
-  linked project (`surya8991s-projects/seo-audit-suite`) is on **Pro**, raise it
-  back to 90 for large bulk crawls.
-- **Deploy secrets** still to add in GitHub repo settings before CI can deploy:
-  `VERCEL_TOKEN` (secret), `VERCEL_ORG_ID` = `team_kpODFmG8pLaRIYxFV5CSwcbj`,
-  `VERCEL_PROJECT_ID` = `prj_LukWrVb9SzS7twPsLtPmHyjJjhvK`.
+- **Double-deploy risk — resolved**: the repo now lives at
+  `Layruss98266/Seo-audit-suite` (moved off the original `surya8991s-projects`
+  Vercel link) and deploys via Vercel's own Git integration, connected
+  directly in the Vercel dashboard. `.github/workflows/deploy.yml` was
+  **removed** to avoid a second deploy path firing on every push;
+  `.github/workflows/ci.yml` is CI-only now (typecheck/lint/tests/build) and
+  does not gate or trigger Vercel deploys. No GitHub Actions deploy secrets
+  are needed.
+- **`vercel.json` maxDuration**: `audit-pipeline` is set to 60s (Hobby-safe).
+  If the new Vercel project is on **Pro**, raise it back to 90 for large bulk
+  crawls.
+- First real deploy (commit `1c5e206`) succeeded — Vercel logged
+  `Previous build caches not available` (expected, first deploy) and built
+  each of the 4 Python functions (`api/ai.py`, `api/audit-pipeline.py`,
+  `api/export.py`, `api/tools.py`) in its own isolated environment — that's
+  normal per-function isolation, not a bug. A build cache (178.91 MB) was
+  created at the end, so subsequent deploys should reuse it and skip most of
+  the repeated dependency installs.
 
 ## ⚠️ Known caveats (not bugs)
 - **`vercel dev` limitation**: plain `next dev` (the `next-dev` launch config)
