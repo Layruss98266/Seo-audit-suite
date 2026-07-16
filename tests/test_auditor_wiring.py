@@ -51,6 +51,11 @@ def test_product_url_runs_product_auditor_and_feeds_all_issues():
     for issue in product_issues:
         assert issue["issue"] in all_issue_titles
 
+    # app/detail/page.tsx's Detail-page card consumes checks_found/checks_score
+    # from this same dict; guard against a future rename silently breaking it.
+    assert isinstance(result["product_audit"]["checks_found"], dict)
+    assert isinstance(result["product_audit"]["checks_score"], (int, float))
+
 
 def test_course_url_runs_course_auditor_and_feeds_all_issues():
     url = "https://example.com/course/bare-course"

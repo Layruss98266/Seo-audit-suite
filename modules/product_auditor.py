@@ -26,31 +26,40 @@ def _iter_jsonld(soup):
         yield data
 
 
-def _has_type(data, type_name):
+_MAX_JSONLD_DEPTH = 50
+
+
+def _has_type(data, type_name, _depth=0):
     """Check whether a (possibly nested) JSON-LD blob declares @type == type_name."""
+    if _depth > _MAX_JSONLD_DEPTH:
+        return False
     if isinstance(data, dict):
         t = data.get("@type")
         if t == type_name or (isinstance(t, list) and type_name in t):
             return True
-        return any(_has_type(v, type_name) for v in data.values())
+        return any(_has_type(v, type_name, _depth + 1) for v in data.values())
     if isinstance(data, list):
-        return any(_has_type(item, type_name) for item in data)
+        return any(_has_type(item, type_name, _depth + 1) for item in data)
     return False
 
 
-def _has_any_type(data):
+def _has_any_type(data, _depth=0):
     """Check whether a (possibly nested) JSON-LD blob contains ANY @type key."""
+    if _depth > _MAX_JSONLD_DEPTH:
+        return False
     if isinstance(data, dict):
         if "@type" in data:
             return True
-        return any(_has_any_type(v) for v in data.values())
+        return any(_has_any_type(v, _depth + 1) for v in data.values())
     if isinstance(data, list):
-        return any(_has_any_type(item) for item in data)
+        return any(_has_any_type(item, _depth + 1) for item in data)
     return False
 
 
-def _schema_price(data):
+def _schema_price(data, _depth=0):
     """Pull offers.price out of a JSON-LD blob, if present."""
+    if _depth > _MAX_JSONLD_DEPTH:
+        return False
     if isinstance(data, dict):
         offers = data.get("offers")
         if isinstance(offers, dict) and offers.get("price"):
@@ -59,9 +68,11 @@ def _schema_price(data):
             isinstance(o, dict) and o.get("price") for o in offers
         ):
             return True
-        return any(_schema_price(v) for v in data.values() if isinstance(v, (dict, list)))
+        return any(
+            _schema_price(v, _depth + 1) for v in data.values() if isinstance(v, (dict, list))
+        )
     if isinstance(data, list):
-        return any(_schema_price(item) for item in data)
+        return any(_schema_price(item, _depth + 1) for item in data)
     return False
 
 
@@ -85,7 +96,7 @@ def audit_product_page(soup, url):
     if not has_product_schema:
         issues.append({
             "issue": "Missing Product Schema Markup",
-            "category": "Product Content",
+            "category": "Structured Data",
             "severity": "High",
             "recommendation": "Add Product schema (JSON-LD) with name, image, and offers so search engines can show rich product results.",
             "impact_score": 8,
@@ -122,7 +133,7 @@ def audit_product_page(soup, url):
     if not review_schema_found:
         issues.append({
             "issue": "Missing Review/Rating Markup",
-            "category": "Product Content",
+            "category": "Structured Data",
             "severity": "Low",
             "recommendation": "Add AggregateRating or Review schema (JSON-LD) to surface star ratings in search results.",
             "impact_score": 3,

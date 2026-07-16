@@ -2,6 +2,8 @@
 vertical checks (schema, price, CTA, reviews, image alt text). Every case
 asserts on the full returned dict shape, not just issue count."""
 
+import json
+
 from bs4 import BeautifulSoup
 
 from modules.product_auditor import audit_product_page
@@ -56,10 +58,10 @@ def test_bare_product_page_fires_every_check():
 
     got = {(i["issue"], i["category"], i["severity"]) for i in result["issues"]}
     assert got == {
-        ("Missing Product Schema Markup", "Product Content", "High"),
+        ("Missing Product Schema Markup", "Structured Data", "High"),
         ("Missing Price / Availability Information", "Product Content", "Medium"),
         ("Missing Add-to-Cart / Purchase CTA", "Product Content", "Medium"),
-        ("Missing Review/Rating Markup", "Product Content", "Low"),
+        ("Missing Review/Rating Markup", "Structured Data", "Low"),
         ("Missing Product Image Alt Text", "Product Content", "Medium"),
     }
     for issue in result["issues"]:
@@ -156,3 +158,25 @@ def test_jsonld_blob_without_type_key_does_not_trigger_schema_found():
 
     assert result["schema_found"] is False
     assert result["has_product_schema"] is False
+
+
+def test_deeply_nested_jsonld_does_not_raise_recursion_error():
+    # A maliciously (or accidentally) deep/self-referential JSON-LD blob
+    # should not crash the audit with RecursionError.
+    nested = {"leaf": True}
+    for _ in range(200):
+        nested = {"child": nested}
+    nested["@type"] = "Product"
+
+    html = f"""
+    <html><body>
+    <script type="application/ld+json">
+    {json.dumps(nested)}
+    </script>
+    </body></html>
+    """
+    soup = BeautifulSoup(html, "lxml")
+    result = audit_product_page(soup, "https://example.com/product/deep")
+
+    assert isinstance(result, dict)
+    assert "issues" in result

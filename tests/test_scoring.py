@@ -149,3 +149,22 @@ def test_product_content_is_a_page_specific_theme():
     from modules.scoring import THEMES
 
     assert "Product Content" in THEMES["Page-Specific"]
+
+
+def test_page_specific_theme_matches_typescript_aggregate():
+    """modules.scoring.THEMES and lib/aggregate.ts's THEMES const are
+    documented as needing to stay in sync (see the comment at the top of
+    lib/aggregate.ts). This catches drift: if one is edited without the
+    other, this test fails."""
+    import re
+    from pathlib import Path
+
+    from modules.scoring import THEMES
+
+    ts_path = Path(__file__).parent.parent / "lib" / "aggregate.ts"
+    ts_source = ts_path.read_text(encoding="utf-8")
+    match = re.search(r'"Page-Specific":\s*\[(.*?)\]', ts_source, re.DOTALL)
+    assert match, "Could not find Page-Specific entry in lib/aggregate.ts THEMES"
+    ts_categories = [c.strip().strip('"') for c in match.group(1).split(",") if c.strip()]
+
+    assert ts_categories == THEMES["Page-Specific"]
