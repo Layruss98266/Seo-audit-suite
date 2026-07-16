@@ -10,6 +10,8 @@ import {
   MapIcon,
   KeyIcon,
   NetworkIcon,
+  CopyIcon,
+  CheckIcon,
 } from "@/components/icons";
 
 // Every tool here is backed by the ported SEO-Suite code in modules/seo_suite,
@@ -33,24 +35,99 @@ async function callTools(body: Record<string, unknown>): Promise<ToolResult> {
 }
 
 const INPUT_CLS =
-  "w-full rounded-lg border border-[var(--seo-border)] bg-[var(--seo-input-bg,transparent)] px-3 py-2 text-sm";
+  "w-full rounded-lg border border-[var(--seo-border)] bg-[var(--seo-input-bg)] px-3 py-2 text-sm transition-colors focus:border-[var(--seo-accent-border)] focus:outline-none";
 const LABEL_CLS = "mb-1 block text-xs font-medium text-[var(--seo-text-light)]";
 const BTN_CLS =
   "rounded-lg btn-gradient px-4 py-2 text-sm font-semibold text-white disabled:opacity-60";
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigator.clipboard?.writeText(text).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        });
+      }}
+      className="inline-flex items-center gap-1 rounded-md border border-[var(--seo-border)] px-2 py-1 text-xs font-medium text-[var(--seo-text-light)] transition-colors hover:border-[var(--seo-border-strong)] hover:text-[var(--seo-heading)]"
+    >
+      {copied ? <CheckIcon size={12} className="text-[var(--seo-success)]" /> : <CopyIcon size={12} />}
+      {copied ? "Copied" : "Copy"}
+    </button>
+  );
+}
+
+type KeywordRow = {
+  keyword: string;
+  searchVolume: number | null;
+  cpc: number | null;
+  competition: number | null;
+  keywordDifficulty: number | null;
+  intent: string | null;
+};
+
+function KeywordResultTable({ rows }: { rows: KeywordRow[] }) {
+  if (!rows.length) {
+    return <p className="text-sm text-[var(--seo-muted)]">No keyword rows returned.</p>;
+  }
+  return (
+    <div className="max-h-96 overflow-auto rounded-lg border border-[var(--seo-border)]">
+      <table className="w-full text-left text-xs">
+        <thead className="sticky top-0 bg-[var(--table-header-bg)] text-[var(--seo-muted)]">
+          <tr>
+            <th className="px-3 py-2 font-semibold">Keyword</th>
+            <th className="px-3 py-2 font-semibold">Volume</th>
+            <th className="px-3 py-2 font-semibold">Difficulty</th>
+            <th className="px-3 py-2 font-semibold">CPC</th>
+            <th className="px-3 py-2 font-semibold">Competition</th>
+            <th className="px-3 py-2 font-semibold">Intent</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={`${row.keyword}-${i}`} className="border-t border-[var(--table-row-border)] hover:bg-[var(--table-row-hover)]">
+              <td className="px-3 py-2 font-medium text-[var(--seo-subheading)]">{row.keyword}</td>
+              <td className="px-3 py-2 tabular-nums text-[var(--seo-text)]">{row.searchVolume ?? "—"}</td>
+              <td className="px-3 py-2 tabular-nums text-[var(--seo-text)]">{row.keywordDifficulty ?? "—"}</td>
+              <td className="px-3 py-2 tabular-nums text-[var(--seo-text)]">{row.cpc != null ? `$${row.cpc.toFixed(2)}` : "—"}</td>
+              <td className="px-3 py-2 tabular-nums text-[var(--seo-text)]">{row.competition != null ? row.competition.toFixed(2) : "—"}</td>
+              <td className="px-3 py-2 capitalize text-[var(--seo-text)]">{row.intent ?? "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function isKeywordRows(rows: unknown): rows is KeywordRow[] {
+  return Array.isArray(rows) && rows.every((r) => r && typeof r === "object" && "keyword" in r);
+}
+
 function ResultBlock({ result }: { result: ToolResult }) {
   if (!result) return null;
+  const json = JSON.stringify(result, null, 2);
+  const rows = result.ok ? result.rows : undefined;
   return (
     <div className="mt-4">
-      <div className="mb-2 flex items-center gap-2">
-        <StatusPill status={result.ok ? "pass" : "fail"} />
-        {result.error ? (
-          <span className="text-sm text-[var(--seo-error)]">{String(result.error)}</span>
-        ) : null}
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <StatusPill status={result.ok ? "pass" : "fail"} />
+          {result.error ? (
+            <span className="text-sm text-[var(--seo-error)]">{String(result.error)}</span>
+          ) : null}
+        </div>
+        <CopyButton text={json} />
       </div>
-      <pre className="max-h-96 overflow-auto rounded-lg border border-[var(--seo-border)] bg-[var(--seo-code-bg,var(--seo-card-hover))] p-3 font-[var(--font-jetbrains-mono),monospace] text-xs text-[var(--seo-text)]">
-        {JSON.stringify(result, null, 2)}
-      </pre>
+      {isKeywordRows(rows) ? (
+        <KeywordResultTable rows={rows} />
+      ) : (
+        <pre className="max-h-96 overflow-auto rounded-lg border border-[var(--seo-border)] bg-[var(--seo-code-bg)] p-3 font-[var(--font-jetbrains-mono),monospace] text-xs text-[var(--seo-text)]">
+          {json}
+        </pre>
+      )}
     </div>
   );
 }

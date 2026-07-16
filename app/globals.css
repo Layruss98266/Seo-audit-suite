@@ -77,6 +77,9 @@
 
   --seo-score-track: #E9EBF0;
 
+  --seo-input-bg: transparent;
+  --seo-code-bg: var(--seo-card-hover);
+
   --font-inter-stack: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono-stack: var(--font-jetbrains-mono), ui-monospace, "SF Mono",
