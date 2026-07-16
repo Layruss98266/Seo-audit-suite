@@ -10,7 +10,7 @@ import type { AuditResult } from "@/lib/types";
 import { domainHealthFor, type DomainHealthMap } from "@/lib/crawl/siteHealthCache";
 
 export interface CrawlOptions {
-  auditType?: "auto" | "course" | "blog" | "general";
+  auditType?: "auto" | "course" | "blog" | "product" | "general";
   checkLinks?: boolean;
   validateLinks?: boolean;
   fetchPagespeed?: boolean;

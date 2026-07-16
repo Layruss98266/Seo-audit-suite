@@ -59,6 +59,7 @@ export interface AuditResult {
   special_link_counts?: Record<string, number>;
   course_audit?: Record<string, any> | null;
   blog_audit?: Record<string, any> | null;
+  product_audit?: Record<string, any> | null;
   http_headers: Record<string, any>;
   technical_seo: Record<string, any>;
   mobile_audit?: Record<string, any>;
@@ -71,7 +72,7 @@ export interface AuditResult {
 }
 
 export interface AuditOptions {
-  auditType: "auto" | "course" | "blog" | "general";
+  auditType: "auto" | "course" | "blog" | "product" | "general";
   checkLinks: boolean;
   validateLinks: boolean;
   fetchPagespeed: boolean;

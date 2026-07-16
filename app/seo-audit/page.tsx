@@ -64,7 +64,7 @@ export default function SEOAuditPage() {
   const [mode, setMode] = useState<InputMode>("single");
 
   // Shared audit options
-  const [auditType, setAuditType] = useState<"auto" | "course" | "blog" | "general">("auto");
+  const [auditType, setAuditType] = useState<"auto" | "course" | "blog" | "product" | "general">("auto");
   const [checkLinks, setCheckLinks] = useState(true);
   const [fetchPagespeed, setFetchPagespeed] = useState(false);
 
@@ -579,6 +579,7 @@ export default function SEOAuditPage() {
               <option value="auto">Auto-Detect</option>
               <option value="course">Course</option>
               <option value="blog">Blog</option>
+              <option value="product">Product</option>
               <option value="general">General</option>
             </select>
           </Field>
